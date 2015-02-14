@@ -17,7 +17,15 @@ import java.sql.SQLException;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "RCHRONO.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
+
+    /*
+    Historique des versions de la base de donnée
+    1: 14/02/15 : Stéphane : architecture de base
+    2: 14/02/15 : Stéphane : Ajout d'une table playlist permettant d'allouer une playlist par défaut à un exercice en plus de celle d'un ElementSequence
+
+
+     */
 
     /**
      * Table Exercice
@@ -31,6 +39,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                                                                             EXERCICE_NOM + " TEXT, "+
                                                                                             EXERCICE_DESCRIPTION + " TEXT, "+
                                                                                             EXERCICE_DUREEPARDEFAUT + " INTEGER);";
+    public static final String EXERCICE_TABLE_DROP="DROP TABLE IF EXISTS " + EXERCICE+";";
 
     /**
      * Table Sequence
@@ -44,6 +53,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                                                                             SEQUENCE_NOM+ " TEXT, "+
                                                                                             SEQUENCE_NOMBREREPETITON + " INTEGER,"+
                                                                                             SEQUENCE_SYNTHESEVOCALE + " INTEGER);";
+    public static final String SEQUENCE_TABLE_DROP="DROP TABLE IF EXISTS " + SEQUENCE+";";
 
     /**
      * Table ListeSequence
@@ -53,21 +63,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String LSTSEQUENCES_ID_SEQUENCE = "ID_SEQUENCE";
     public static final String LSTSEQUENCES_TABLE_CREATE =  "CREATE TABLE " + LSTSEQUENCES + "(" + LSTSEQUENCES_ID_LISTEQUENCES + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                                     LSTSEQUENCES_ID_SEQUENCE + " INTEGER);";
+    public static final String LSTSEQUENCES_TABLE_DROP="DROP TABLE IF EXISTS " + LSTSEQUENCES+";";
 
     /**
      * Table Morceau
      */
     public static final String MORCEAU = "MORCEAU";
     public static final String MORCEAU_ID = "ID_MORCEAU";
-    public static final String MORCEAU_ID_ELEMENTSEQUENCE = "ID_ELEMENTSEQUENCE";
     public static final String MORCEAU_TITRE = "TITRE";
     public static final String MORCEAU_CHEMIN = "CHEMIN";
     public static final String MORCEAU_TABLE_CREATE = "CREATE TABLE "+ MORCEAU + "(" + MORCEAU_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                                                                                        MORCEAU_ID_ELEMENTSEQUENCE + " INTEGER,"+
                                                                                         MORCEAU_TITRE + " TEXT, "+
                                                                                         MORCEAU_CHEMIN + " TEXT); ";
+    public static final String MORCEAU_TABLE_DROP="DROP TABLE IF EXISTS " + MORCEAU+";";
 
+    /**
+     * Table Playlist
+     * Fait le lien entre les morceaux et un exercice ou un ElementSequence.
+     * Si une playlist existe pour un exercice et pour l'ElementSequence qui en hérite, c'est la playlist de l'ElementSequence qui est pris en compte
+     */
+    public static final String PLAYLIST = "PLAYLIST";
+    public static final String PLAYLIST_ID = "ID_PLAYLIST";
+    public static final String PLAYLIST_ID_MORCEAU="ID_MORCEAU";
+    public static final String PLAYLIST_ID_EXERCICE="ID_EXERCICE";
+    public static final String PLAYLIST_ID_ELEMENTSEQUENCE="ID_ELEMENTSEQUENCE";
+    public static final String PLAYLIST_POSITION="POSITION";
+    public static final String PLAYLIST_TABLE_CREATE="CREATE TABLE " + PLAYLIST + "(" + PLAYLIST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                                                                        PLAYLIST_ID_MORCEAU+" INTEGER,"+
+                                                                                        PLAYLIST_ID_EXERCICE+" INTEGER,"+
+                                                                                        PLAYLIST_ID_ELEMENTSEQUENCE+" INTEGER,"+
+                                                                                        PLAYLIST_POSITION + " INTEGER);";
+    public static final String PLAYLIST_TABLE_DROP="DROP TABLE IF EXISTS " + PLAYLIST+";";
 
+    /**
+     * Table ElementSequence
+     */
 
     public static final String ELEMENTSEQUENCE = "ELEMENTSEQUENCE";
     public static final String ELEMENTSEQUENCE_ID = "ID_ELEMENTSEQUENCE";
@@ -86,6 +116,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                                                                                         ELEMENTSEQUENCE_DUREE + " INTEGER,"+
                                                                                                         ELEMENTSEQUENCE_NOTIFICATION + " INTEGER,"+
                                                                                                         ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION + " TEXT);";
+    public static final String ELEMENTSEQUENCE_TABLE_DROP="DROP TABLE IF EXISTS " + ELEMENTSEQUENCE+";";
+
 
 
 
@@ -136,11 +168,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }catch(SQLiteException e){
             Log.d("SQL", "Erreur ElementSequence :" + e.toString());
         }
-
+        try {
+            db.execSQL(PLAYLIST_TABLE_CREATE);
+        }catch(SQLiteException e){
+            Log.d("SQL", "Erreur Playlist :" + e.toString());
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(EXERCICE_TABLE_DROP);
+        db.execSQL(SEQUENCE_TABLE_DROP);
+        db.execSQL(ELEMENTSEQUENCE_TABLE_DROP);
+        db.execSQL(LSTSEQUENCES_TABLE_DROP);
+        db.execSQL(MORCEAU_TABLE_DROP);
+        db.execSQL(PLAYLIST_TABLE_DROP);
+        onCreate(db);
     }
 }

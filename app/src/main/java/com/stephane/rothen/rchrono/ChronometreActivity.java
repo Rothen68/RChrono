@@ -18,7 +18,9 @@ public class ChronometreActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chronometre);
 
-
+        DatabaseHandler dbh = new DatabaseHandler(getApplicationContext());
+        SQLiteDatabase bdd= dbh.getWritableDatabase();
+        Log.d("SQL",bdd.toString());
     }
 
     @Override
