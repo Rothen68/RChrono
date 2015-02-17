@@ -26,5 +26,45 @@ public class Notification {
      */
     protected Uri m_fichierSonnerie;
 
+    public Notification(int notificationFromBdd,String fichier) {
+        switch (notificationFromBdd) {
+            case 1:
+                m_vibreur = true;
+                break;
+            case 2:
+                m_popup = true;
+                break;
+            case 3:
+                m_vibreur = true;
+                m_popup = true;
+                break;
+            case 4:
+                m_sonnerie = true;
+                break;
+            case 5:
+                m_sonnerie = true;
+                m_vibreur = true;
+                break;
+            case 6:
+                m_sonnerie = true;
+                m_popup = true;
+                break;
+            case 7:
+                m_sonnerie = true;
+                m_popup = true;
+                m_vibreur = true;
+                break;
+            default:
+                break;
+        }
+        Uri.Builder b = new Uri.Builder();
+        b.encodedPath(fichier);
+        m_fichierSonnerie = b.build();
+        //TODO: vérifier syntaxe Uri.builder
+    }
 
+    public int getNotificationForBdd()
+    {
+        return 0;
+    }
 }

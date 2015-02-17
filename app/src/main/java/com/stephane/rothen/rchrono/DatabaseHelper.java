@@ -10,19 +10,20 @@ import android.util.Log;
 import java.sql.SQLException;
 
 /**
- * Classe controleur gérant la base de donnée interne
+ * Classe controleur gérant la création, la mise à jour et la connexion à base de donnée interne
  *
  * Created by Stéphane on 14/02/2015.
  */
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "RCHRONO.db";
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
 
     /*
     Historique des versions de la base de donnée
     1: 14/02/15 : Stéphane : architecture de base
     2: 14/02/15 : Stéphane : Ajout d'une table playlist permettant d'allouer une playlist par défaut à un exercice en plus de celle d'un ElementSequence
+    3: 17/02/15 : Stéphane : Ajout d'un element JouerPlaylist dans la table exercice
 
 
      */
@@ -35,10 +36,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String EXERCICE_DESCRIPTION = "DESCRIPTION";
     public static final String EXERCICE_DUREEPARDEFAUT = "DUREEPARDEFAUT";
     public static final String EXERCICE = "EXERCICE";
+    public static final String EXERCICE_JOUERPLAYLIST="JOUERPLAYLIST";
     public static final String EXERCICE_TABLE_CREATE = "CREATE TABLE " + EXERCICE + " (" + EXERCICE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                             EXERCICE_NOM + " TEXT, "+
                                                                                             EXERCICE_DESCRIPTION + " TEXT, "+
-                                                                                            EXERCICE_DUREEPARDEFAUT + " INTEGER);";
+                                                                                            EXERCICE_DUREEPARDEFAUT + " INTEGER, " +
+                                                                                            EXERCICE_JOUERPLAYLIST  + " INTEGER );";
     public static final String EXERCICE_TABLE_DROP="DROP TABLE IF EXISTS " + EXERCICE+";";
 
     /**
@@ -122,7 +125,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
 
-    public DatabaseHandler(Context context)
+
+
+
+
+    public DatabaseHelper(Context context)
     {
         super (context,DB_NAME,null,DB_VERSION);
 
@@ -130,12 +137,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
 
-    public DatabaseHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
 
     }
 
-    public DatabaseHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
+    public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
         super(context, name, factory, version, errorHandler);
 
     }

@@ -19,4 +19,21 @@ public class Exercice {
      */
     protected int m_dureeParDefaut;
 
+    /**
+     * Playlist par défaut de l'exercice
+     *
+     * @see com.stephane.rothen.rchrono.Playlist
+     */
+    protected Playlist m_playlistParDefaut;
+
+
+
+
+    public Exercice(String nomExercice, String descriptionExercice, int dureeParDefaut, Playlist playlistParDefaut) {
+        this.m_nomExercice = nomExercice;
+        this.m_descriptionExercice = descriptionExercice;
+        this.m_dureeParDefaut = dureeParDefaut;
+        this.m_playlistParDefaut = playlistParDefaut;
+
+    }
 }

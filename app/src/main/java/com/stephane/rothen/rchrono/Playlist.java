@@ -18,4 +18,20 @@ public class Playlist {
      * La playlist est jouée pendant l'exercice
      */
     protected boolean m_jouerPlaylist;
+
+    public Playlist(){
+        m_listeMorceaux = new ArrayList<>();
+    };
+
+    void setJouerPlaylist ( boolean b)
+    {
+        m_jouerPlaylist=b;
+    }
+
+    void ajouterMorceau(String morceau)
+    {
+        Uri.Builder builder = new Uri.Builder();
+        builder.path(morceau);
+        m_listeMorceaux.add(builder.build());
+    }
 }

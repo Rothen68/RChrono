@@ -33,6 +33,11 @@ public class ElementSequence extends Exercice {
      */
     protected SyntheseVocale m_syntheseVocale;
 
-
-
+    public ElementSequence(String nomExercice, String descriptionExercice, int dureeParDefaut, Playlist playlistParDefaut, int dureeExercice, Playlist playlistExercice, Notification notification, SyntheseVocale syntheseVocale) {
+        super(nomExercice, descriptionExercice, dureeParDefaut, playlistParDefaut);
+        this.m_dureeExercice = dureeExercice;
+        this.m_playlistExercice = playlistExercice;
+        this.m_notification = notification;
+        this.m_syntheseVocale = syntheseVocale;
+    }
 }

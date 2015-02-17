@@ -10,18 +10,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 
 public class ChronometreActivity extends ActionBarActivity {
+    private Chronometre c;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chronometre);
-
-        DatabaseHandler dbh = new DatabaseHandler(getApplicationContext());
-        SQLiteDatabase bdd= dbh.getWritableDatabase();
-        Log.d("SQL",bdd.toString());
+        c = new Chronometre(getApplication());
+        c.sauvegarde();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -43,5 +47,10 @@ public class ChronometreActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }
