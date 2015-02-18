@@ -6,6 +6,8 @@ package com.stephane.rothen.rchrono;
  * Created by Stéphane on 14/02/2015.
  */
 public class SyntheseVocale {
+    private static final int NOM = 0x01;
+    private static final int DUREE = 0x02;
     /**
      * Le nom est dit par la synthèse vocale
      */
@@ -21,20 +23,21 @@ public class SyntheseVocale {
      */
     public SyntheseVocale(int syntheseVocaleFromBdd)
     {
-        switch (syntheseVocaleFromBdd)
+        if((syntheseVocaleFromBdd&NOM)!=0)
         {
-            case 1:
-                m_nom=true;
-                break;
-            case 2:
-                m_duree=true;
-                break;
-            case 3:
-                m_duree=true;
-                m_nom=true;
-                break;
-            default:
-                break;
+            m_nom=true;
+        }
+        else
+        {
+            m_nom=false;
+        }
+        if((syntheseVocaleFromBdd&DUREE)!=0)
+        {
+            m_duree=true;
+        }
+        else
+        {
+            m_duree=false;
         }
     }
 
@@ -44,13 +47,10 @@ public class SyntheseVocale {
      */
     public int getSyntheseVocaleForBdd()
     {
-        if(m_nom && m_duree) return 3;
-
-        if(m_nom && !m_duree) return 1;
-
-        if(!m_nom && m_duree) return 2;
-
-        return 0;
+        //TODO : tester les notifications et les synthese vocale suite a utilisation de masques
+        int r = ((m_nom)?(NOM):(0));
+        r=r+ ((m_duree)?(DUREE):(0));
+        return r;
     }
 
 }

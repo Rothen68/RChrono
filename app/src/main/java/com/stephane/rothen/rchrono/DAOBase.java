@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -106,9 +107,9 @@ public class DAOBase {
                             syntheseVocale = c.getInt(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_SYNTHESEVOCALE));
                             int duree = c.getInt(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_DUREE));
                             int notification = c.getInt(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_NOTIFICATION));
-                            String fichierAudio = c.getString(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION));
+                            long fichierAudio = c.getLong(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION));
                             int idElementSequence = c.getInt(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_ID));
-                            int jouerPlaylist = c.getInt(c.getColumnIndex(DatabaseHelper.EXERCICE_JOUERPLAYLIST));
+                            int jouerPlaylist = c.getInt(c.getColumnIndex(DatabaseHelper.EXERCICE_JOUERPLAYLISTPARDEFAUT));
 
                             Cursor cPlaylist = m_db.rawQuery("SELECT " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_IDENTIFIANT + ", " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_TITRE + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_ARTISTE +
                                     " FROM " + DatabaseHelper.MORCEAU + " INNER JOIN " + DatabaseHelper.PLAYLIST +
@@ -218,7 +219,7 @@ public class DAOBase {
                     map.put(DatabaseHelper.ELEMENTSEQUENCE_POSITION,String.valueOf(i));
                     map.put(DatabaseHelper.ELEMENTSEQUENCE_SYNTHESEVOCALE,String.valueOf(e.getSyntheseVocale().getSyntheseVocaleForBdd()));
                     map.put(DatabaseHelper.ELEMENTSEQUENCE_NOTIFICATION,String.valueOf(e.getNotification().getNotificationForBdd()));
-                    map.put(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION,e.getNotification().getFichierSonnerie().getEncodedPath());
+                    map.put(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION,String.valueOf(e.getNotification().getFichierSonnerie()));
                     String where =  DatabaseHelper.ELEMENTSEQUENCE_ID + " = '" + String.valueOf(idElement+"'");
                     m_db.update(DatabaseHelper.ELEMENTSEQUENCE,map,where,null);
 
@@ -286,7 +287,7 @@ public class DAOBase {
                 map = new ContentValues();
                 map.put(DatabaseHelper.EXERCICE_DESCRIPTION, e.getDescriptionExercice());
                 map.put(DatabaseHelper.EXERCICE_DUREEPARDEFAUT, String.valueOf(e.getDureeParDefaut()));
-                map.put(DatabaseHelper.EXERCICE_JOUERPLAYLIST, String.valueOf(e.getPlaylistParDefaut().getJouerPlaylist()));
+                map.put(DatabaseHelper.EXERCICE_JOUERPLAYLISTPARDEFAUT, String.valueOf(e.getPlaylistParDefaut().getJouerPlaylist()));
                 where = DatabaseHelper.EXERCICE_ID + " = " + String.valueOf(idExercice);
                 m_db.update(DatabaseHelper.EXERCICE, map, where, null);
             }
@@ -296,7 +297,7 @@ public class DAOBase {
                 map.put(DatabaseHelper.EXERCICE_NOM, e.getNomExercice());
                 map.put(DatabaseHelper.EXERCICE_DESCRIPTION, e.getDescriptionExercice());
                 map.put(DatabaseHelper.EXERCICE_DUREEPARDEFAUT, String.valueOf(e.getDureeParDefaut()));
-                map.put(DatabaseHelper.EXERCICE_JOUERPLAYLIST, String.valueOf(e.getPlaylistParDefaut().getJouerPlaylist()));
+                map.put(DatabaseHelper.EXERCICE_JOUERPLAYLISTPARDEFAUT, String.valueOf(e.getPlaylistParDefaut().getJouerPlaylist()));
                 idExercice = (int)m_db.insert(DatabaseHelper.EXERCICE, null, map);
             }
 
@@ -354,7 +355,7 @@ public class DAOBase {
             String nom = cExercice.getString(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_NOM));
             String description = cExercice.getString(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_DESCRIPTION));
             int dureeParDefaut = cExercice.getInt(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_DUREEPARDEFAUT));
-            int jouerPlaylist = cExercice.getInt(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_JOUERPLAYLIST));
+            int jouerPlaylist = cExercice.getInt(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_JOUERPLAYLISTPARDEFAUT));
 
             // recherche les morceaux composant la playlist de l'exercice
             String requete = "SELECT " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_IDENTIFIANT + ", " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_TITRE + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_ARTISTE +
@@ -382,4 +383,89 @@ public class DAOBase {
         }
         return tab;
     }
+
+    /**
+     * Sauvegarde la librairie des séquences dans la base de donnée via l'Arraylist passé en parametre
+     * @param tab
+     */
+
+    public void saveLibrairieSequences(ArrayList<Sequence> tab)
+    {
+
+    }
+
+    /**
+     * Récupère et renvois la librairie des sequences
+     * @return
+     *      Arraylist contenant les sequences récupéréss
+     */
+    public ArrayList<Sequence> restoreLibrairieSequences(LibrairieExercices libExercices)
+    {
+        ArrayList<Sequence> tab = new ArrayList<>();
+
+        //récupération de toutes les séquences de la table Sequence
+        Cursor c = m_db.rawQuery("SELECT * FROM " + DatabaseHelper.SEQUENCE + ";", null);
+        while(c.moveToNext())
+        {
+            int idSequence = c.getInt(c.getColumnIndex(DatabaseHelper.SEQUENCE_ID));
+            String nomSequence = c.getString(c.getColumnIndex(DatabaseHelper.SEQUENCE_NOM));
+            int nbreRepetition = c.getInt(c.getColumnIndex(DatabaseHelper.SEQUENCE_NOMBREREPETITON));
+            int syntheseVocale = c.getInt(c.getColumnIndex(DatabaseHelper.SEQUENCE_SYNTHESEVOCALE));
+            Sequence seq = new Sequence(nomSequence,nbreRepetition,new SyntheseVocale(syntheseVocale));
+            //Recherche des ElementSequence et Exercices pour la séquence en cours
+            String requete = "SELECT * FROM " + DatabaseHelper.ELEMENTSEQUENCE + " INNER JOIN " + DatabaseHelper.EXERCICE + " ON " + DatabaseHelper.ELEMENTSEQUENCE + "." + DatabaseHelper.ELEMENTSEQUENCE_ID_EXERCICE +
+                " = " + DatabaseHelper.EXERCICE + "." + DatabaseHelper.EXERCICE_ID + " WHERE " + DatabaseHelper.ELEMENTSEQUENCE + "." + DatabaseHelper.ELEMENTSEQUENCE_ID_SEQUENCE + " = '" + String.valueOf(idSequence) + "';";
+            Cursor cElement = m_db.rawQuery(requete,null);
+            while(cElement.moveToNext())
+            {
+
+                String nomExercice = cElement.getString(cElement.getColumnIndex(DatabaseHelper.EXERCICE_NOM));
+                int idElement = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_ID));
+                int positionElement = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_POSITION));
+                int syntheseVocaleElement = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_SYNTHESEVOCALE));
+                int dureeElement = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_DUREE));
+                int notificationElement = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_NOTIFICATION));
+                int jouerPlaylist = cElement.getInt(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_JOUERPLAYLIST));
+                long idFichierNotifElement = cElement.getLong(cElement.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION));
+                //recherche de l'exercice dans la librairie des exercices
+                Exercice exercice=null;
+                for (Exercice e : libExercices.getLibrairie())
+                {
+                    if ( nomExercice.equals(e.getNomExercice()))
+                    {
+                        exercice=e;
+                    }
+                }
+                if ( exercice==null)
+                {
+                    Log.d("SQL", "Erreur l'exercice n'existe pas dans la librairie");
+                }
+
+                // récupération de la playlist de l'element
+                Playlist pl = new Playlist();
+                if(jouerPlaylist>0)
+                    pl.setJouerPlaylist(true);
+                else
+                    pl.setJouerPlaylist(false);
+
+                requete = "SELECT " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_IDENTIFIANT + ", " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_TITRE + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_ARTISTE +
+                        " FROM " + DatabaseHelper.MORCEAU + " INNER JOIN " + DatabaseHelper.PLAYLIST +
+                        " ON " + DatabaseHelper.MORCEAU + "." + DatabaseHelper.MORCEAU_ID + " = " + DatabaseHelper.PLAYLIST + "." + DatabaseHelper.PLAYLIST_ID_MORCEAU +
+                        " WHERE " + DatabaseHelper.PLAYLIST + "." + DatabaseHelper.PLAYLIST_ID_ELEMENTSEQUENCE + " = " + String.valueOf(idElement) + " ORDER BY " + DatabaseHelper.PLAYLIST + "."+
+                        DatabaseHelper.PLAYLIST_POSITION + ";";
+
+                Cursor cPlaylist = m_db.rawQuery(requete,null);
+                while (cPlaylist.moveToNext())
+                {
+                    pl.ajouterMorceau(new Morceau(cPlaylist.getLong(cPlaylist.getColumnIndex(DatabaseHelper.MORCEAU_IDENTIFIANT)),cPlaylist.getString(cPlaylist.getColumnIndex(DatabaseHelper.MORCEAU_TITRE)),cPlaylist.getString(cPlaylist.getColumnIndex(DatabaseHelper.MORCEAU_ARTISTE))));
+                }
+
+                ElementSequence element = new ElementSequence(exercice.getNomExercice(),exercice.getDescriptionExercice(),exercice.getDureeParDefaut(),exercice.getPlaylistParDefaut(),dureeElement,pl,new Notification(notificationElement,idFichierNotifElement),new SyntheseVocale(syntheseVocaleElement));
+                seq.ajouterElement(element);
+            }
+            tab.add(seq);
+        }
+        return tab;
+    }
+
 }

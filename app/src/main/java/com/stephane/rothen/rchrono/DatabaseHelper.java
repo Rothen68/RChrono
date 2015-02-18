@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     1: 14/02/15 : Stéphane : architecture de base
     2: 14/02/15 : Stéphane : Ajout d'une table playlist permettant d'allouer une playlist par défaut à un exercice en plus de celle d'un ElementSequence
     3: 17/02/15 : Stéphane : Ajout d'un element JouerPlaylist dans la table exercice
-    4: 18/02/15 : Stéphane : Remplacement du champ Chemin de la table Morceau par le champs Identifiant et ajout de l'artiste
+    4: 18/02/15 : Stéphane : Remplacement du champ Chemin de la table Morceau par le champs Identifiant et ajout de l'artiste et changement du type FichierAudioNotificaiton dans ElementSequence
 
 
 
@@ -38,12 +38,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String EXERCICE_DESCRIPTION = "DESCRIPTION";
     public static final String EXERCICE_DUREEPARDEFAUT = "DUREEPARDEFAUT";
     public static final String EXERCICE = "EXERCICE";
-    public static final String EXERCICE_JOUERPLAYLIST="JOUERPLAYLIST";
+    public static final String EXERCICE_JOUERPLAYLISTPARDEFAUT="JOUERPLAYLISTPARDEFAUT";
     public static final String EXERCICE_TABLE_CREATE = "CREATE TABLE " + EXERCICE + " (" + EXERCICE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                             EXERCICE_NOM + " TEXT, "+
                                                                                             EXERCICE_DESCRIPTION + " TEXT, "+
                                                                                             EXERCICE_DUREEPARDEFAUT + " INTEGER, " +
-                                                                                            EXERCICE_JOUERPLAYLIST  + " INTEGER );";
+                                                                                            EXERCICE_JOUERPLAYLISTPARDEFAUT  + " INTEGER );";
     public static final String EXERCICE_TABLE_DROP="DROP TABLE IF EXISTS " + EXERCICE+";";
 
     /**
@@ -113,6 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String ELEMENTSEQUENCE_POSITION = "POSITION";
     public static final String ELEMENTSEQUENCE_SYNTHESEVOCALE ="SYNTHESEVOCALE";
     public static final String ELEMENTSEQUENCE_DUREE ="DUREE";
+    public static final String ELEMENTSEQUENCE_JOUERPLAYLIST="JOUERPLAYLIST";
     public static final String ELEMENTSEQUENCE_NOTIFICATION ="NOTIFICATION";
     public static final String ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION ="FICHIERAUDIONOTIFICATION";
     public static final String ELEMENTSEQUENCE_TABLE_CREATE ="CREATE TABLE " + ELEMENTSEQUENCE + "(" + ELEMENTSEQUENCE_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -121,8 +122,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                                                                                         ELEMENTSEQUENCE_POSITION + " INTEGER,"+
                                                                                                         ELEMENTSEQUENCE_SYNTHESEVOCALE + " INTEGER,"+
                                                                                                         ELEMENTSEQUENCE_DUREE + " INTEGER,"+
+                                                                                                        ELEMENTSEQUENCE_JOUERPLAYLIST + " INTEGER, " +
                                                                                                         ELEMENTSEQUENCE_NOTIFICATION + " INTEGER,"+
-                                                                                                        ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION + " TEXT);";
+                                                                                                        ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION + " INT);";
     public static final String ELEMENTSEQUENCE_TABLE_DROP="DROP TABLE IF EXISTS " + ELEMENTSEQUENCE+";";
 
 
