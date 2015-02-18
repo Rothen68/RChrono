@@ -17,13 +17,15 @@ import java.sql.SQLException;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "RCHRONO.db";
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 4;
 
     /*
     Historique des versions de la base de donnée
     1: 14/02/15 : Stéphane : architecture de base
     2: 14/02/15 : Stéphane : Ajout d'une table playlist permettant d'allouer une playlist par défaut à un exercice en plus de celle d'un ElementSequence
     3: 17/02/15 : Stéphane : Ajout d'un element JouerPlaylist dans la table exercice
+    4: 18/02/15 : Stéphane : Remplacement du champ Chemin de la table Morceau par le champs Identifiant et ajout de l'artiste
+
 
 
      */
@@ -74,10 +76,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MORCEAU = "MORCEAU";
     public static final String MORCEAU_ID = "ID_MORCEAU";
     public static final String MORCEAU_TITRE = "TITRE";
-    public static final String MORCEAU_CHEMIN = "CHEMIN";
+    public static final String MORCEAU_ARTISTE = "ARTISTE";
+    public static final String MORCEAU_IDENTIFIANT = "IDENTIFIANT";
     public static final String MORCEAU_TABLE_CREATE = "CREATE TABLE "+ MORCEAU + "(" + MORCEAU_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                                                         MORCEAU_TITRE + " TEXT, "+
-                                                                                        MORCEAU_CHEMIN + " TEXT); ";
+                                                                                        MORCEAU_ARTISTE + " TEXT, " +
+                                                                                        MORCEAU_IDENTIFIANT + " INTEGER); ";
     public static final String MORCEAU_TABLE_DROP="DROP TABLE IF EXISTS " + MORCEAU+";";
 
     /**

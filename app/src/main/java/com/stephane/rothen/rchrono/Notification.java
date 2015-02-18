@@ -67,4 +67,9 @@ public class Notification {
     {
         return 0;
     }
+
+    public Uri getFichierSonnerie()
+    {
+        return m_fichierSonnerie;
+    }
 }

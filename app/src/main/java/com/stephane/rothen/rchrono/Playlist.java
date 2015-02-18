@@ -13,7 +13,7 @@ public class Playlist {
     /**
      * Tableau contenant la liste des liens vers les morceaux à jouer dans la playlist
      */
-    protected ArrayList<Uri> m_listeMorceaux;
+    protected ArrayList<Morceau> m_listeMorceaux;
     /**
      * La playlist est jouée pendant l'exercice
      */
@@ -23,15 +23,56 @@ public class Playlist {
         m_listeMorceaux = new ArrayList<>();
     };
 
-    void setJouerPlaylist ( boolean b)
+
+
+    public void setJouerPlaylist ( boolean b)
     {
         m_jouerPlaylist=b;
     }
 
-    void ajouterMorceau(String morceau)
+
+    public int getJouerPlaylist()
     {
-        Uri.Builder builder = new Uri.Builder();
-        builder.path(morceau);
-        m_listeMorceaux.add(builder.build());
+        if (m_jouerPlaylist)
+            return 1;
+        else
+            return 0;
+    }
+
+    /**
+     * Ajoute le morceau dont le chemin est passé en parametre
+     *
+     * @param m
+     *  Morceau a ajouter
+     */
+    public void ajouterMorceau(Morceau m)
+    {
+        m_listeMorceaux.add(m);
+    }
+
+
+
+    /**
+     * Renvois le morceau dont la position est passée en parametre
+     * @param position
+     *  Position du morceau dans la playlist
+     * @return
+     *  Uri du morceau
+     */
+    public Morceau getMorceauAt(int position)
+    {
+        if ( position>=0 && position < m_listeMorceaux.size())
+            return m_listeMorceaux.get(position);
+        else return null;
+    }
+
+    /**
+     * Renvois le nombre de morceaux dans la playlist
+     * @return
+     * Nombre de morceaux
+     */
+    public int getNbreMorceaux()
+    {
+        return m_listeMorceaux.size();
     }
 }

@@ -36,14 +36,27 @@ public class Chronometre {
      *
      * @see com.stephane.rothen.rchrono.Playlist
      */
-    private int m_indexMorceauActif;
+    protected int m_indexMorceauActif;
 
     /**
      * Position dans le morceau actif
      *
      * @see com.stephane.rothen.rchrono.Chronometre#m_indexMorceauActif
      */
-    private int m_positionDansMorceauActif;
+    protected int m_positionDansMorceauActif;
+
+    /**
+     * Librairie des exercies
+     * @see com.stephane.rothen.rchrono.LibrairieExercices
+     */
+    protected LibrairieExercices m_libExercices;
+
+    /**
+     * Librairie des séquences
+     * @see com.stephane.rothen.rchrono.LibrairieSequences
+     */
+
+    protected LibrairieSequences m_libSequences;
 
     /**
      * Gestionnaire de connexion à la base de donnée
@@ -61,14 +74,15 @@ public class Chronometre {
         m_bdd = m_bddHelper.open();
         m_tabSequence = new ArrayList<>();
 
-        initSequences();
+        initLibrairieExercices();
+
 
     }
 
     /**
      * initialise la liste des séquence depuis la base de donnée
      */
-    private void initSequences() {
+    private void initListeSequences() {
         int nbreSequences = m_bddHelper.getNbreSequence();
         Sequence s;
         for (int i = 0 ; i<nbreSequences ; i++)
@@ -80,11 +94,27 @@ public class Chronometre {
 
     }
 
+    private void initLibrairieExercices()
+    {
+        m_libExercices = new LibrairieExercices(m_bddHelper.restoreLibrairieExercice());
+    }
+
     /**
      * sauvegarde la liste des séquences dans la base de donnée
      */
-    public void sauvegarde()
+    public void saveListeSequence()
     {
         m_bddHelper.saveLstSequence(m_tabSequence);
+    }
+
+    public void saveLibrairieExercice()
+    {
+        m_bddHelper.SaveLibrairieExercice(m_libExercices.getLibrairie());
+    }
+
+
+    public LibrairieExercices getLibrairieExercice()
+    {
+        return m_libExercices;
     }
 }

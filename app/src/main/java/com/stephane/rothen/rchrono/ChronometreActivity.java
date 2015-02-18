@@ -1,20 +1,32 @@
 package com.stephane.rothen.rchrono;
 
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
 
 
+
 public class ChronometreActivity extends ActionBarActivity {
+
+
     private Chronometre c;
+    private ListView lv;
+    private ArrayList<Morceau> listMusic;
 
 
     @Override
@@ -22,7 +34,45 @@ public class ChronometreActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chronometre);
         c = new Chronometre(getApplication());
-        c.sauvegarde();
+        listMusic = new ArrayList<>();
+
+        ((Button)findViewById(R.id.btnScanUri)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanMusiques();
+            }
+        });
+    }
+
+    private void scanMusiques()
+    {
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri,null,null,null,null);
+
+        if(musicCursor!=null && musicCursor.moveToFirst())
+        {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            do{
+                long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                listMusic.add(new Morceau(thisId,thisTitle,thisArtist));
+            }while(musicCursor.moveToNext());
+
+
+
+        }
+        Playlist pl = new Playlist();
+        for(Morceau m : listMusic)
+            pl.ajouterMorceau(m);
+
+        Exercice e = new Exercice("test","test2",15,pl);
+
+        c.getLibrairieExercice().ajoutExercice(e);
+        c.saveLibrairieExercice();
     }
 
 
@@ -41,10 +91,6 @@ public class ChronometreActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

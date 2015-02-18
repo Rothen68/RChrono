@@ -40,4 +40,21 @@ public class ElementSequence extends Exercice {
         this.m_notification = notification;
         this.m_syntheseVocale = syntheseVocale;
     }
+
+
+    public int getDureeExercice()
+    {
+        return m_dureeExercice;
+    }
+
+    public SyntheseVocale getSyntheseVocale()
+    {
+        return m_syntheseVocale;
+    }
+
+    public Notification getNotification()
+    {
+        return m_notification;
+    }
+
 }

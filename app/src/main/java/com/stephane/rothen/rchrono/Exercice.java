@@ -36,4 +36,25 @@ public class Exercice {
         this.m_playlistParDefaut = playlistParDefaut;
 
     }
+
+    public String getNomExercice()
+    {
+        return m_nomExercice;
+    }
+
+    public String getDescriptionExercice()
+    {
+        return m_descriptionExercice;
+    }
+
+    public int getDureeParDefaut()
+    {
+        return m_dureeParDefaut;
+    }
+
+    public Playlist getPlaylistParDefaut()
+    {
+        return m_playlistParDefaut;
+    }
+
 }
