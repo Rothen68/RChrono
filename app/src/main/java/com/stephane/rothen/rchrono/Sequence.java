@@ -45,10 +45,6 @@ public class Sequence {
         m_tabElement=new ArrayList<>();
     }
 
-    public Sequence()
-    {
-
-    }
 
     public String getNomSequence() {
         return m_nomSequence;
@@ -70,20 +66,42 @@ public class Sequence {
         return m_syntheseVocale;
     }
 
-    public void setM_syntheseVocale(SyntheseVocale syntheseVocale) {
-        this.m_syntheseVocale = syntheseVocale;
+    public void setM_syntheseVocale(SyntheseVocale syntheseVocale) {this.m_syntheseVocale = syntheseVocale;
     }
 
-    public ArrayList<ElementSequence> getTabElement() {
-        return m_tabElement;
+    public ArrayList<ElementSequence> getTabElement() {return m_tabElement;
     }
 
-    public void setTabElement(ArrayList<ElementSequence> tabElement) {
-        this.m_tabElement = tabElement;
+    public void setTabElement(ArrayList<ElementSequence> tabElement) {this.m_tabElement = tabElement;
     }
 
+    /**
+     * Ajoute un ElementSequence à la séquence
+     * @param e
+     *      ElementSequence à ajouter
+     *@see com.stephane.rothen.rchrono.ElementSequence
+     * @see com.stephane.rothen.rchrono.Sequence#m_tabElement
+     */
     public void ajouterElement ( ElementSequence e)
     {
         m_tabElement.add(e);
+    }
+
+
+    /**
+     * Fonction qui retourne la durée d'une séquence incluant les répétitions
+     * @return
+     *      durée de la séquence
+     *
+     */
+    public int getDureeSequence()
+    {
+        int duree = 0;
+        for ( ElementSequence e : m_tabElement)
+        {
+            duree = duree + e.getDureeExercice();
+        }
+        duree = duree * m_nombreRepetition;
+        return duree;
     }
 }

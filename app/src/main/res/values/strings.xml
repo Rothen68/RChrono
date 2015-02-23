@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">RChrono</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="chronometre_start">Démarrer</string>
+    <string name="chronometre_pause">Pause</string>
+    <string name="chronometre_reset">Remise à zéro</string>
+
     <string name="action_settings">Settings</string>
 </resources>

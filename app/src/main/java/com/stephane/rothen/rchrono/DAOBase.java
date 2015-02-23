@@ -272,7 +272,7 @@ public class DAOBase {
      *          Arraylist contenant les exercices
      */
 
-    public void SaveLibrairieExercice(ArrayList<Exercice> tab)
+    public void saveLibrairieExercice(ArrayList<Exercice> tab)
     {
         for (Exercice e :tab)
         {
@@ -391,7 +391,85 @@ public class DAOBase {
 
     public void saveLibrairieSequences(ArrayList<Sequence> tab)
     {
+        //Effacement de la table ElementSequence
+        m_db.execSQL(DatabaseHelper.ELEMENTSEQUENCE_TABLE_DROP);
 
+        for (Sequence s : tab)
+        {
+            String requete = "SELECT * FROM "+ DatabaseHelper.SEQUENCE + " WHERE " + DatabaseHelper.SEQUENCE + "." + DatabaseHelper.SEQUENCE_NOM + " = " + s.getNomSequence();
+            Cursor c = m_db.rawQuery(requete,null);
+            if(c.getCount()==1)
+            {
+                // mise a jour de la séquence dans la base
+                ContentValues map = new ContentValues();
+                map.put(DatabaseHelper.SEQUENCE_NOMBREREPETITON,String.valueOf(s.getNombreRepetition()));
+                map.put(DatabaseHelper.SEQUENCE_SYNTHESEVOCALE,String.valueOf(s.getSyntheseVocale().getSyntheseVocaleForBdd()));
+                String where = DatabaseHelper.SEQUENCE_ID + " = " + c.getString(c.getColumnIndex(DatabaseHelper.ELEMENTSEQUENCE_ID));
+                m_db.update(DatabaseHelper.SEQUENCE,map,where,null);
+                int position=0;
+                for ( ElementSequence element:s.getTabElement())
+                {
+
+                    //mise a jour des élémentSequence
+
+                    //recherche de l'id de l'exercice avec son nom
+                    Cursor cExercice= m_db.query(DatabaseHelper.EXERCICE,new String[]{DatabaseHelper.EXERCICE_ID},DatabaseHelper.EXERCICE_NOM + "=" + element.getNomExercice(),null,null,null,null);
+                    if (cExercice.getCount()!=1)
+                    {
+                        //erreur l'exercice n'est pas référencé dans la table
+                        Log.d("SQL","L'exercice n'est pas référencé dans la table " );
+                    }
+                    else {
+
+                        map = new ContentValues();
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_ID_EXERCICE, cExercice.getString(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_ID)));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_ID_SEQUENCE,c.getString(c.getColumnIndex(DatabaseHelper.SEQUENCE_ID)));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_NOTIFICATION, String.valueOf(element.getNotification().getNotificationForBdd()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION, String.valueOf(element.getNotification().getFichierSonnerie()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_SYNTHESEVOCALE, String.valueOf(element.getSyntheseVocale().getSyntheseVocaleForBdd()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_DUREE, String.valueOf(element.getDureeExercice()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_POSITION, String.valueOf(position));
+                        m_db.insert(DatabaseHelper.ELEMENTSEQUENCE,null,map);
+                    }
+                    position++;
+                }
+            }
+            else
+            {
+                ContentValues map = new ContentValues();
+                map.put(DatabaseHelper.SEQUENCE_NOM,s.getNomSequence());
+                map.put(DatabaseHelper.SEQUENCE_NOMBREREPETITON,String.valueOf(s.getNombreRepetition()));
+                map.put(DatabaseHelper.SEQUENCE_SYNTHESEVOCALE,String.valueOf(s.getSyntheseVocale().getSyntheseVocaleForBdd()));
+                int idSequence = (int) m_db.insert(DatabaseHelper.SEQUENCE,null,map);
+                int position=0;
+                for ( ElementSequence element:s.getTabElement())
+                {
+
+                    //mise a jour des élémentSequence
+
+                    //recherche de l'id de l'exercice avec son nom
+                    Cursor cExercice= m_db.query(DatabaseHelper.EXERCICE,new String[]{DatabaseHelper.EXERCICE_ID},DatabaseHelper.EXERCICE_NOM + "=" + element.getNomExercice(),null,null,null,null);
+                    if (cExercice.getCount()!=1)
+                    {
+                        //erreur l'exercice n'est pas référencé dans la table
+                        Log.d("SQL","L'exercice n'est pas référencé dans la table " );
+                    }
+                    else {
+
+                        map = new ContentValues();
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_ID_EXERCICE, cExercice.getString(cExercice.getColumnIndex(DatabaseHelper.EXERCICE_ID)));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_ID_SEQUENCE,String.valueOf(idSequence));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_NOTIFICATION, String.valueOf(element.getNotification().getNotificationForBdd()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_FICHIERAUDIONOTIFICATION, String.valueOf(element.getNotification().getFichierSonnerie()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_SYNTHESEVOCALE, String.valueOf(element.getSyntheseVocale().getSyntheseVocaleForBdd()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_DUREE, String.valueOf(element.getDureeExercice()));
+                        map.put(DatabaseHelper.ELEMENTSEQUENCE_POSITION, String.valueOf(position));
+                        m_db.insert(DatabaseHelper.ELEMENTSEQUENCE,null,map);
+                    }
+                    position++;
+                }
+            }
+        }
     }
 
     /**

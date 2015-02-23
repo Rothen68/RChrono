@@ -47,7 +47,6 @@ public class SyntheseVocale {
      */
     public int getSyntheseVocaleForBdd()
     {
-        //TODO : tester les notifications et les synthese vocale suite a utilisation de masques
         int r = ((m_nom)?(NOM):(0));
         r=r+ ((m_duree)?(DUREE):(0));
         return r;

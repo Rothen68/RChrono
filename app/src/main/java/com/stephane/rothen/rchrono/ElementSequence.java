@@ -33,6 +33,18 @@ public class ElementSequence extends Exercice {
      */
     protected SyntheseVocale m_syntheseVocale;
 
+
+    /**
+     * Constructeur
+     * @param nomExercice
+     * @param descriptionExercice
+     * @param dureeParDefaut
+     * @param playlistParDefaut
+     * @param dureeExercice
+     * @param playlistExercice
+     * @param notification
+     * @param syntheseVocale
+     */
     public ElementSequence(String nomExercice, String descriptionExercice, int dureeParDefaut, Playlist playlistParDefaut, int dureeExercice, Playlist playlistExercice, Notification notification, SyntheseVocale syntheseVocale) {
         super(nomExercice, descriptionExercice, dureeParDefaut, playlistParDefaut);
         this.m_dureeExercice = dureeExercice;
@@ -42,10 +54,7 @@ public class ElementSequence extends Exercice {
     }
 
 
-    public int getDureeExercice()
-    {
-        return m_dureeExercice;
-    }
+    public int getDureeExercice(){ return m_dureeExercice; }
 
     public SyntheseVocale getSyntheseVocale()
     {
@@ -56,5 +65,7 @@ public class ElementSequence extends Exercice {
     {
         return m_notification;
     }
+
+
 
 }

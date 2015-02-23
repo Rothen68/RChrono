@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+lv_exercice_focused_layout.xml
+
+Définit le layout d'un exercice qui a le focus dans la listView
+
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:background="@color/BLUE"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+
+        android:text="Medium Text"
+        android:id="@+id/txtLvExercice"
+        android:gravity="left"
+        android:layout_weight="1"
+        android:layout_marginLeft="30dp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bntSuppr"
+        android:background="@drawable/suppr"
+        android:clickable="false"
+        android:visibility="invisible"
+        android:enabled="false" />
+</LinearLayout>
