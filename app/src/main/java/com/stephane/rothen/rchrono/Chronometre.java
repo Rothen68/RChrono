@@ -1,7 +1,6 @@
 package com.stephane.rothen.rchrono;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
@@ -114,13 +113,19 @@ public class Chronometre {
         ElementSequence e = new ElementSequence("Exercice 1","",10,null,10,null,null,null);
         ElementSequence e2 = new ElementSequence("Exercice 2","",60,null,5,null,null,null);
         ElementSequence e3 = new ElementSequence("Exercice 3","",30,null,5,null,null,null);
+        ElementSequence e4 = new ElementSequence("Exercice 4","",30,null,7,null,null,null);
+        ElementSequence e5 = new ElementSequence("Exercice 5","",30,null,7,null,null,null);
         Sequence s = new Sequence("Sequence 1", 2,null);
         s.ajouterElement(e);
         s.ajouterElement(e2);
         Sequence s2 = new Sequence("Sequence 2", 1,null);
         s2.ajouterElement(e3);
+        Sequence s3 = new Sequence("Sequence 3",2,null);
+        s3.ajouterElement(e4);
+        s3.ajouterElement(e5);
         m_tabSequence.add(s);
         m_tabSequence.add(s2);
+        m_tabSequence.add(s3);
 
     }
 
@@ -222,10 +227,24 @@ public class Chronometre {
      */
     public void resetChrono()
     {
-        m_indexSequenceActive=0;
-        m_indexExerciceActif=0;
-        m_positionDansExerciceActif=m_tabSequence.get(m_indexSequenceActive).getTabElement().get(m_indexExerciceActif).getDureeExercice();
-        m_nbreRepetition=m_tabSequence.get(m_indexSequenceActive).getNombreRepetition();
+        if(m_tabSequence.size()>0) {
+            m_indexSequenceActive = 0;
+            m_nbreRepetition=m_tabSequence.get(0).getNombreRepetition();
+            if (m_tabSequence.get(0).getTabElement().size()>0)
+            {
+                m_indexExerciceActif=0;
+            }
+        }
+        else {
+            m_indexSequenceActive = -1;
+            m_indexExerciceActif = -1;
+            m_nbreRepetition = -1;
+        }
+        if(m_indexExerciceActif>=0)
+            m_positionDansExerciceActif=m_tabSequence.get(m_indexSequenceActive).getTabElement().get(m_indexExerciceActif).getDureeExercice();
+        else
+            m_positionDansExerciceActif=-1;
+
     }
 
     /**
@@ -245,6 +264,49 @@ public class Chronometre {
                 m_indexExerciceActif = indexExercice;
             }
         }
+    }
+
+    /**
+     * Permet de positionner les curseurs du chronometre d'après la position d'un item cliqué dans la ListView
+     * @param positionDansListView
+     *      position de l'item sur lequel l'utilisateur a clicker
+     * @return
+     *      position de l'item sur lequel affecter le focus
+     */
+
+    public int setChronoAt(int positionDansListView)
+    {
+        int curseur = -1;
+        m_indexExerciceActif=-1;
+        m_indexSequenceActive=-1;
+        m_nbreRepetition=-1;
+        for (Sequence seq : m_tabSequence)
+        {
+            curseur++;
+            if (curseur == positionDansListView) {
+                m_indexSequenceActive = m_tabSequence.indexOf(seq);
+                m_nbreRepetition = seq.getNombreRepetition();
+                if (seq.getTabElement().size() > 0){
+                    m_indexExerciceActif = 0;
+                    curseur++;
+                    return curseur;
+                }
+                return 0;
+            } else {
+                for (ElementSequence el : seq.getTabElement()) {
+                    curseur++;
+                    if (curseur == positionDansListView) {
+                        m_indexSequenceActive = m_tabSequence.indexOf(seq);
+                        m_nbreRepetition=seq.getNombreRepetition();
+                        m_indexExerciceActif = seq.getTabElement().indexOf(el);
+                        return curseur;
+                    }
+                }
+            }
+        }
+        return -1;
+
+
     }
 
     /**

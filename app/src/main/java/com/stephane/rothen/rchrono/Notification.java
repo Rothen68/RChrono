@@ -1,7 +1,5 @@
 package com.stephane.rothen.rchrono;
 
-import android.net.Uri;
-
 /**
  * Notification est la classe métier gérant les notifications pour un exercice
  *

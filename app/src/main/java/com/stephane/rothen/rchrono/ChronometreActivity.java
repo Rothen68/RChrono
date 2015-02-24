@@ -3,25 +3,20 @@ package com.stephane.rothen.rchrono;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 
 
@@ -96,13 +91,11 @@ public class ChronometreActivity extends ActionBarActivity {
         mbtnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (chronoService!=null)
-                {
-                    if( chronoService.getChronoStart()) {
+                if (chronoService != null) {
+                    if (chronoService.getChronoStart()) {
                         chronoService.stopChrono();
                         mbtnStart.setText(R.string.chronometre_start);
-                    }
-                    else {
+                    } else {
                         chronoService.startChrono();
                         mbtnStart.setText(R.string.chronometre_pause);
                     }
@@ -116,8 +109,7 @@ public class ChronometreActivity extends ActionBarActivity {
         mbtnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chronoService!=null)
-                {
+                if (chronoService != null) {
                     chronoService.resetChrono();
                 }
             }
@@ -125,7 +117,38 @@ public class ChronometreActivity extends ActionBarActivity {
         txtChrono=(TextView) findViewById(R.id.txtChrono);
         mLv = (ListView) findViewById(R.id.listView);
         mAdapter=new CustomAdapter(this);
+        mLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /**
+             * Lors d'un appuis court sur un item de la ListView, arrête le chrono et le place sur l'exercice sélectionné, ou en cas de séquence sélectionnée, sur le premier exercice de la séquence
+             * @param parent
+             * @param view
+             * @param position
+             * @param id
+             *
+             * @see com.stephane.rothen.rchrono.Chronometre#setChronoAt(int)
+             * @see com.stephane.rothen.rchrono.ChronoService
+             */
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                chronoService.stopChrono();
+                int posExercice = mChrono.setChronoAt(position);
+                if(posExercice>-1)
+                    afficheListView(posExercice);
+                mbtnStart.setText(R.string.chronometre_start);
+                chronoService.updateChrono(mChrono.getDureeExerciceActif());
+            }
+        });
+        mLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                chronoService.stopChrono();
+                //TODO : ouvrir la fenetre ListeSequenceActivity
+                return true;
+            }
+        });
+
         afficheListView(0);
+
 
         //initialisation du receiver qui permet la communication vers l'interface depuis chronoService
         myReceiver=new MyReceiver();
@@ -240,6 +263,26 @@ public class ChronometreActivity extends ActionBarActivity {
             }
         }
         mLv.setAdapter(mAdapter);
+        final int position = positionFocus;
+        mLv.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                //TODO améliorer le changement de position dans la ListView
+                if(mLv.getFirstVisiblePosition()>position||mLv.getLastVisiblePosition()<=position)
+                {
+                    int milieu = (int) ((mLv.getLastVisiblePosition()-mLv.getFirstVisiblePosition())/2);
+                    int pos=position+milieu;
+                    if(pos>mLv.getCount())
+                    {
+                        mLv.smoothScrollToPosition(mLv.getCount());
+                    }
+                    else
+                        mLv.smoothScrollToPosition(pos);
+                }
+            }
+        },100L);
+
     }
 
 

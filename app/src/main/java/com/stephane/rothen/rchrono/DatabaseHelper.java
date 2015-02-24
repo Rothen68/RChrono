@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.sql.SQLException;
-
 /**
  * Classe controleur gérant la création, la mise à jour et la connexion à base de donnée interne
  *

@@ -11,20 +11,19 @@ Définit le layout d'une séquence dans la listView
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/txtLvSequence"
-        android:gravity="left"
-        android:layout_weight="1" />
+        android:gravity="left|center_vertical"
+        android:layout_weight="1"
+        android:layout_gravity="center" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bntSuppr"
-        android:background="@drawable/suppr"
-        android:clickable="false"
         android:visibility="invisible"
-        android:enabled="false" />
+        android:id="@+id/btnSuppr"
+        android:background="@drawable/suppr"
+        android:layout_gravity="center" />
 </LinearLayout>

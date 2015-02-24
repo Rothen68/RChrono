@@ -3,15 +3,9 @@ package com.stephane.rothen.rchrono;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.os.SystemClock;
-import android.widget.Chronometer;
-import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by stéphane on 23/02/2015.
@@ -200,20 +194,19 @@ public class ChronoService extends Service {
         i.setAction(SER_UPDATE_LISTVIEW);
         int exercice =mChrono.getIndexExerciceActif();
         int seq = mChrono.getIndexSequenceActive();
-        int position =1;
-        for (int j =0; j <seq;j++)
-        {
-            position++;
-            for (ElementSequence e : mChrono.getListeSequence().get(j).getTabElement())
-            {
+        if(exercice>=0) {
+            int position = 1;
+            for (int j = 0; j < seq; j++) {
                 position++;
+                for (ElementSequence e : mChrono.getListeSequence().get(j).getTabElement()) {
+                    position++;
+                }
             }
+            position = position + exercice;
+            i.putExtra(SER_UPDATE_LISTVIEW, position);
         }
-        position = position + exercice;
-        if(chronoStart)
-            i.putExtra(SER_UPDATE_LISTVIEW,position);
         else
-        i.putExtra(SER_UPDATE_LISTVIEW,0);
+            i.putExtra(SER_UPDATE_LISTVIEW,0);
         sendBroadcast(i);
 
     }
@@ -229,14 +222,14 @@ public class ChronoService extends Service {
         mTimer = new CountDownTimer(duree*1000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                updateChrono((int)(millisUntilFinished/1000));
+                updateChrono((int)((millisUntilFinished)/1000));
             }
 
             @Override
             public void onFinish() {
                 if(mChrono.next()) {
-                    lancerTimer();
                     updateListView();
+                    lancerTimer();
                 }
                 else
                 {
