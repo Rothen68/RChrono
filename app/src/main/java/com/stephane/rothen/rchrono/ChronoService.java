@@ -81,6 +81,17 @@ public class ChronoService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if( mTimer!=null)
+        {
+            mTimer.cancel();
+            mTimer=null;
+        }
+
+    }
+
     /**
      * Fonction gérant le lancement du chrono
      */

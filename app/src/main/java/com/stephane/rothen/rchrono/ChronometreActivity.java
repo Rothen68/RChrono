@@ -70,26 +70,13 @@ public class ChronometreActivity extends ActionBarActivity {
      * Objet permettant de gérer la communication de l'interface vers le service, il initialise chronoService
      * @see com.stephane.rothen.rchrono.ChronometreActivity#chronoService
      */
-    private ServiceConnection mConnexion=new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-
-            chronoService =  ((ChronoService.MonBinder) service).getService();
-            chronoService.setChronometre(mChrono);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            chronoService=null;
-        }
-    };
+    private ServiceConnection mConnexion;
 
 
 
     /**
      * Méthode appelée lors du lancement de l'application.
-     * <p>Les données membres de la classe ainsi que l'affichage sont initialisé.
-     * Le service ChronoService y est aussi lancé</p>
+     * <p>Les données membres de la classe ainsi que l'affichage sont initialisé.</p>
      *
      *
      * @param savedInstanceState
@@ -102,11 +89,6 @@ public class ChronometreActivity extends ActionBarActivity {
         setContentView(R.layout.activity_chronometre);
 
         mChrono = new Chronometre(getApplication());
-
-        //Lancement du service ChronoService
-        Intent intent = new Intent(getApplicationContext(),ChronoService.class);
-        intent.putExtra(ChronoService.SER_ACTION, 0);
-        bindService(intent,mConnexion,BIND_AUTO_CREATE);
 
         //Initialisation des éléments de l'interface
         mbtnStart = (Button) findViewById(R.id.btnStart);
@@ -171,6 +153,45 @@ public class ChronometreActivity extends ActionBarActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * Lancement du ChronoService dans onStart()
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Lancement du service ChronoService
+        mConnexion =new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+                chronoService =  ((ChronoService.MonBinder) service).getService();
+                chronoService.setChronometre(mChrono);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                chronoService=null;
+            }
+        };
+        Intent intent = new Intent(getApplicationContext(),ChronoService.class);
+        intent.putExtra(ChronoService.SER_ACTION, 0);
+        bindService(intent,mConnexion,BIND_AUTO_CREATE);
+    }
+
+    /**
+     * Arrêt du service ChronoService dans onStop()
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopService(new Intent(this,ChronoService.class));
+        chronoService=null;
+        mConnexion=null;
+
+
     }
 
     /**
