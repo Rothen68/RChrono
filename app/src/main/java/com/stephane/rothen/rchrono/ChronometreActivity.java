@@ -157,6 +157,32 @@ public class ChronometreActivity extends ActionBarActivity {
         ifilter.addAction(ChronoService.SER_UPDATE_LISTVIEW);
         ifilter.addAction(ChronoService.SER_FIN_LISTESEQUENCE);
         registerReceiver(myReceiver, ifilter);
+
+
+        // permet de faire basculer l'affichage entre la durée restante de l'exercice, la durée restante de la séquence ou la durée restante totale
+        ((TextView) findViewById(R.id.txtChrono)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int type = mChrono.getTypeAffichage();
+                switch (type)
+                {
+                    case Chronometre.AFFICHAGE_TEMPS_EX:
+                        mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_SEQ);
+                        ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Sequence);
+                        break;
+                    case Chronometre.AFFICHAGE_TEMPS_SEQ:
+                        mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_TOTAL);
+                        ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Total);
+                        break;
+                    case Chronometre.AFFICHAGE_TEMPS_TOTAL:
+                        mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_EX);
+                        ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Exercice);
+                        break;
+                    default :
+                        break;
+                }
+            }
+        });
     }
 
 

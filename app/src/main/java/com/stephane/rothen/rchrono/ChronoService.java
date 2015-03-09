@@ -42,6 +42,16 @@ public class ChronoService extends Service {
      */
     private CountDownTimer mTimer;
 
+    /**
+     * durée restante dans la séquence active
+     */
+    private int m_dureeRestanteSequenceActive;
+
+    /**
+     * durée restante totale
+     */
+    private int m_dureeRestanteTotale;
+
 
     /**
      * Classe permettant la communication depuis l'interface
@@ -94,6 +104,7 @@ public class ChronoService extends Service {
         if(!chronoStart)
         {
             chronoStart=true;
+            m_dureeRestanteTotale=mChrono.getDureeRestanteTotale();
             lancerTimer();
             updateListView();
         }
@@ -177,8 +188,22 @@ public class ChronoService extends Service {
     {
         mChrono.setDureeRestanteExerciceActif(delais);
         Intent i = new Intent();
+        int type = mChrono.getTypeAffichage();
         i.setAction(SER_TEMPS_RESTANT);
-        i.putExtra(SER_TEMPS_RESTANT,delais);
+        switch (type)
+        {
+            case Chronometre.AFFICHAGE_TEMPS_EX:
+                i.putExtra(SER_TEMPS_RESTANT,delais);
+                break;
+            case Chronometre.AFFICHAGE_TEMPS_SEQ:
+                i.putExtra(SER_TEMPS_RESTANT,m_dureeRestanteSequenceActive);
+                break;
+            case Chronometre.AFFICHAGE_TEMPS_TOTAL:
+                i.putExtra(SER_TEMPS_RESTANT,m_dureeRestanteTotale);
+                break;
+            default :
+                break;
+        }
         sendBroadcast(i);
     }
 
@@ -218,11 +243,15 @@ public class ChronoService extends Service {
      */
     private void lancerTimer()
     {
+        //todo modifier la facon dont le timer se créé : utiliser le temps total plutot que le temps de chaque exercice et faire en sorte que l'interface récupere la valeur du chrono depuis la classe chronometre
         int duree = mChrono.getDureeRestanteExerciceActif();
+        m_dureeRestanteSequenceActive=mChrono.getDureeRestanteSequenceActive();
         mTimer = new CountDownTimer(duree*1000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 updateChrono((int)((millisUntilFinished)/1000));
+                m_dureeRestanteSequenceActive--;
+                m_dureeRestanteTotale--;
             }
 
             @Override
@@ -230,6 +259,8 @@ public class ChronoService extends Service {
                 if(mChrono.next()) {
                     updateListView();
                     lancerTimer();
+                    m_dureeRestanteTotale=mChrono.getDureeRestanteTotale();
+
                 }
                 else
                 {

@@ -12,6 +12,13 @@ import java.util.ArrayList;
 public class Chronometre {
 
     /**
+     * Constantes définissant le type d'affichage du chronomètre
+     */
+    public static final int AFFICHAGE_TEMPS_EX =1;
+    public static final int AFFICHAGE_TEMPS_SEQ =2;
+    public static final int AFFICHAGE_TEMPS_TOTAL =3;
+
+    /**
      * Tableau de séquences à executer
      *
      * @see com.stephane.rothen.rchrono.Sequence
@@ -55,6 +62,13 @@ public class Chronometre {
     protected int m_positionDansMorceauActif;
 
     /**
+     * Type d'affichage du chronomètre
+     *
+     * @see #AFFICHAGE_TEMPS_EX
+     */
+    protected int m_typeAffichage;
+
+    /**
      * Librairie des exercies
      * @see com.stephane.rothen.rchrono.LibrairieExercices
      */
@@ -71,6 +85,9 @@ public class Chronometre {
      * Gestionnaire de connexion à la base de donnée
      */
     protected DAOBase m_bddHelper=null;
+
+
+
 
 
 
@@ -92,6 +109,7 @@ public class Chronometre {
         m_indexSequenceActive=0;
         m_nbreRepetition=m_tabSequence.get(m_indexSequenceActive).getNombreRepetition();
         m_positionDansExerciceActif = m_tabSequence.get(m_indexSequenceActive).getTabElement().get(m_indexExerciceActif).getDureeExercice();
+        m_typeAffichage=AFFICHAGE_TEMPS_EX;
 
 
     }
@@ -379,4 +397,43 @@ public class Chronometre {
 
         return duree;
     }
+
+
+    /**
+     * met à jour la valeur de TypeAffichage
+     * @param type
+     * @see #AFFICHAGE_TEMPS_EX
+     * @see #m_typeAffichage
+     */
+    public void setTypeAffichage(int type)
+    {
+        if(type>0 && type <=3)
+        {
+            m_typeAffichage=type;
+        }
+    }
+
+    /**
+     * renvois la valeur de m_typeAffichage
+     * @return
+     *
+     * @see #m_typeAffichage
+     */
+    public int getTypeAffichage() {return m_typeAffichage;}
+
+
+    /**
+     * Calcule et renvois la durée totale restante
+     * @return
+     *      durée totale restante
+     */
+    public int getDureeRestanteTotale()
+    {
+        int duree = getDureeRestanteSequenceActive();
+        for (int i = m_indexSequenceActive+1 ; i < m_tabSequence.size();i++)
+            duree+= m_tabSequence.get(i).getDureeSequence();
+        return duree;
+
+    }
+
 }

@@ -5,5 +5,9 @@
     <string name="chronometre_pause">Pause</string>
     <string name="chronometre_reset">Remise à zéro</string>
 
+    <string name="descChronometre_Exercice">Exercice</string>
+    <string name="descChronometre_Sequence">Séquence</string>
+    <string name="descChronometre_Total">Total</string>
+
     <string name="action_settings">Settings</string>
 </resources>
