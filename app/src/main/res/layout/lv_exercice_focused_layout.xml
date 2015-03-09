@@ -5,7 +5,7 @@ lv_exercice_focused_layout.xml
 Définit le layout d'un exercice qui a le focus dans la listView
 
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ImageView
@@ -36,4 +36,4 @@ Définit le layout d'un exercice qui a le focus dans la listView
         android:id="@+id/btnSuppr"
         android:background="@drawable/suppr"
         android:layout_gravity="center" />
-</LinearLayout>
+</merge>

@@ -48,6 +48,16 @@ public class Chronometre {
     protected  int m_positionDansExerciceActif;
 
     /**
+     * durée restante dans la séquence active
+     */
+    private int m_dureeRestanteSequenceActive;
+
+    /**
+     * durée restante totale
+     */
+    private int m_dureeRestanteTotale;
+
+    /**
      * Index du morceau actif dans la playlist de l'exercice
      *
      * @see com.stephane.rothen.rchrono.Playlist
@@ -231,6 +241,7 @@ public class Chronometre {
                 }
                 m_nbreRepetition = m_tabSequence.get(m_indexSequenceActive).getNombreRepetition();
             }
+
         }
         m_positionDansExerciceActif = m_tabSequence.get(m_indexSequenceActive).getTabElement().get(m_indexExerciceActif).getDureeExercice();
         return true;
@@ -306,6 +317,9 @@ public class Chronometre {
                 m_nbreRepetition = seq.getNombreRepetition();
                 if (seq.getTabElement().size() > 0){
                     m_indexExerciceActif = 0;
+                    m_positionDansExerciceActif= seq.getTabElement().get(m_indexExerciceActif).getDureeExercice();
+                    m_dureeRestanteSequenceActive = getDureeRestanteSequenceActive();
+                    m_dureeRestanteTotale=getDureeRestanteTotale();
                     curseur++;
                     return curseur;
                 }
@@ -317,6 +331,9 @@ public class Chronometre {
                         m_indexSequenceActive = m_tabSequence.indexOf(seq);
                         m_nbreRepetition=seq.getNombreRepetition();
                         m_indexExerciceActif = seq.getTabElement().indexOf(el);
+                        m_positionDansExerciceActif= el.getDureeExercice();
+                        m_dureeRestanteSequenceActive = getDureeRestanteSequenceActive();
+                        m_dureeRestanteTotale=getDureeRestanteTotale();
                         return curseur;
                     }
                 }
@@ -392,9 +409,10 @@ public class Chronometre {
             duree = duree + e.getDureeExercice();
         }
         duree = duree * (m_nbreRepetition-1);
-        for (int  i = m_indexExerciceActif; i < s.getTabElement().size();i++)
+        for (int  i = m_indexExerciceActif+1; i < s.getTabElement().size();i++)
             duree = duree + s.getTabElement().get(i).getDureeExercice();
 
+        duree+=getDureeRestanteExerciceActif();
         return duree;
     }
 
@@ -434,6 +452,23 @@ public class Chronometre {
             duree+= m_tabSequence.get(i).getDureeSequence();
         return duree;
 
+    }
+
+    public void setDureeRestanteTotale(int duree)
+    {
+        m_dureeRestanteTotale=duree;
+    }
+
+    public boolean tick()
+    {
+        m_positionDansExerciceActif--;
+        if (m_positionDansExerciceActif<=0)
+        {
+            next();
+            return false;
+
+        }
+        return true;
     }
 
 }

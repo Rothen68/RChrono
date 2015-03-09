@@ -135,7 +135,7 @@ public class ChronometreActivity extends ActionBarActivity {
                 if(posExercice>-1)
                     afficheListView(posExercice);
                 mbtnStart.setText(R.string.chronometre_start);
-                chronoService.updateChrono(mChrono.getDureeExerciceActif());
+                chronoService.updateChrono();
             }
         });
         mLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -146,7 +146,7 @@ public class ChronometreActivity extends ActionBarActivity {
                 return true;
             }
         });
-
+        mLv.setAdapter(mAdapter);
         afficheListView(0);
 
 
@@ -169,18 +169,34 @@ public class ChronometreActivity extends ActionBarActivity {
                     case Chronometre.AFFICHAGE_TEMPS_EX:
                         mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_SEQ);
                         ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Sequence);
+                        setTxtChrono(convertSversHMS(mChrono.getDureeRestanteSequenceActive()));
                         break;
                     case Chronometre.AFFICHAGE_TEMPS_SEQ:
                         mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_TOTAL);
                         ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Total);
+                        setTxtChrono(convertSversHMS(mChrono.getDureeRestanteTotale()));
                         break;
                     case Chronometre.AFFICHAGE_TEMPS_TOTAL:
                         mChrono.setTypeAffichage(Chronometre.AFFICHAGE_TEMPS_EX);
                         ((TextView)findViewById(R.id.txtDescChrono)).setText(R.string.descChronometre_Exercice);
+                        setTxtChrono(convertSversHMS(mChrono.getDureeRestanteExerciceActif()));
                         break;
                     default :
                         break;
                 }
+                int position=1;
+                int exercice =mChrono.getIndexExerciceActif();
+                int seq = mChrono.getIndexSequenceActive();
+                if(exercice>=0) {
+                    for (int j = 0; j < seq; j++) {
+                        position++;
+                        for (ElementSequence e : mChrono.getListeSequence().get(j).getTabElement()) {
+                            position++;
+                        }
+                    }
+                    position = position + exercice;
+                }
+                afficheListView(position);
             }
         });
     }
@@ -288,24 +304,40 @@ public class ChronometreActivity extends ActionBarActivity {
                 mAdapter.addItem(s.getTabElement().get(j).getNomExercice() + " - " + convertSversHMS( s.getTabElement().get(j).getDureeExercice()));
             }
         }
-        mLv.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
         final int position = positionFocus;
+
+
         mLv.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                //TODO améliorer le changement de position dans la ListView
-                if(mLv.getFirstVisiblePosition()>position||mLv.getLastVisiblePosition()<=position)
+
+                if(mLv.getLastVisiblePosition()<=position)
                 {
                     int milieu = (int) ((mLv.getLastVisiblePosition()-mLv.getFirstVisiblePosition())/2);
                     int pos=position+milieu;
-                    if(pos>mLv.getCount())
+                    if(pos<mLv.getCount())
                     {
-                        mLv.smoothScrollToPosition(mLv.getCount());
+                        mLv.smoothScrollToPosition(pos);
+
                     }
                     else
-                        mLv.smoothScrollToPosition(pos);
+                        mLv.smoothScrollToPosition(mLv.getCount());
                 }
+                else if (mLv.getFirstVisiblePosition()>=position)
+                {
+                    int milieu = (int) ((mLv.getLastVisiblePosition()-mLv.getFirstVisiblePosition())/2);
+                    int pos=position-milieu;
+                    if(pos>0)
+                    {
+                        mLv.smoothScrollToPosition(pos);
+
+                    }
+                    else
+                        mLv.smoothScrollToPosition(0);
+                }
+
             }
         },100L);
 

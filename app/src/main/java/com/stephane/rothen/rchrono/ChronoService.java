@@ -42,15 +42,7 @@ public class ChronoService extends Service {
      */
     private CountDownTimer mTimer;
 
-    /**
-     * durée restante dans la séquence active
-     */
-    private int m_dureeRestanteSequenceActive;
 
-    /**
-     * durée restante totale
-     */
-    private int m_dureeRestanteTotale;
 
 
     /**
@@ -104,7 +96,6 @@ public class ChronoService extends Service {
         if(!chronoStart)
         {
             chronoStart=true;
-            m_dureeRestanteTotale=mChrono.getDureeRestanteTotale();
             lancerTimer();
             updateListView();
         }
@@ -143,7 +134,7 @@ public class ChronoService extends Service {
         mChrono.resetChrono();
         if(mTimer!=null)
             mTimer.cancel();
-        updateChrono(mChrono.getDureeExerciceActif());
+        updateChrono();
         updateListView();
         Intent i = new Intent();
         i.setAction(SER_FIN_LISTESEQUENCE);
@@ -179,27 +170,25 @@ public class ChronoService extends Service {
 
     /**
      * Envois une demande d'actualisation de la zone de texte txtChrono de l'interface
-     * @param delais
-     *      valeur à afficher
+
      *@see com.stephane.rothen.rchrono.ChronometreActivity#txtChrono
      * @see com.stephane.rothen.rchrono.ChronometreActivity#myReceiver
      */
-    public void updateChrono(int delais)
+    public void updateChrono()
     {
-        mChrono.setDureeRestanteExerciceActif(delais);
         Intent i = new Intent();
         int type = mChrono.getTypeAffichage();
         i.setAction(SER_TEMPS_RESTANT);
         switch (type)
         {
             case Chronometre.AFFICHAGE_TEMPS_EX:
-                i.putExtra(SER_TEMPS_RESTANT,delais);
+                i.putExtra(SER_TEMPS_RESTANT,mChrono.getDureeRestanteExerciceActif());
                 break;
             case Chronometre.AFFICHAGE_TEMPS_SEQ:
-                i.putExtra(SER_TEMPS_RESTANT,m_dureeRestanteSequenceActive);
+                i.putExtra(SER_TEMPS_RESTANT,mChrono.getDureeRestanteSequenceActive());
                 break;
             case Chronometre.AFFICHAGE_TEMPS_TOTAL:
-                i.putExtra(SER_TEMPS_RESTANT,m_dureeRestanteTotale);
+                i.putExtra(SER_TEMPS_RESTANT,mChrono.getDureeRestanteTotale());
                 break;
             default :
                 break;
@@ -243,29 +232,22 @@ public class ChronoService extends Service {
      */
     private void lancerTimer()
     {
-        //todo modifier la facon dont le timer se créé : utiliser le temps total plutot que le temps de chaque exercice et faire en sorte que l'interface récupere la valeur du chrono depuis la classe chronometre
-        int duree = mChrono.getDureeRestanteExerciceActif();
-        m_dureeRestanteSequenceActive=mChrono.getDureeRestanteSequenceActive();
+        //todo corriger le bug d'affichage de la durée des séquences
+        int duree = mChrono.getDureeRestanteTotale();
         mTimer = new CountDownTimer(duree*1000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                updateChrono((int)((millisUntilFinished)/1000));
-                m_dureeRestanteSequenceActive--;
-                m_dureeRestanteTotale--;
+                if (!mChrono.tick())
+                    updateListView();
+                updateChrono();
+
+
             }
 
             @Override
             public void onFinish() {
-                if(mChrono.next()) {
-                    updateListView();
-                    lancerTimer();
-                    m_dureeRestanteTotale=mChrono.getDureeRestanteTotale();
+                resetChrono();
 
-                }
-                else
-                {
-                    resetChrono();
-                }
             }
         }.start();
 

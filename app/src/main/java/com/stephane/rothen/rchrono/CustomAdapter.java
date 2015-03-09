@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.stephane.rothen.rchrono.views.ItemListeExercice;
+import com.stephane.rothen.rchrono.views.ItemListeSequence;
+
+
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -170,6 +174,7 @@ public class CustomAdapter extends BaseAdapter {
      * @return
      *      View initialisée
      */
+    /*
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         int rowType = getItemViewType(position);
@@ -197,6 +202,43 @@ public class CustomAdapter extends BaseAdapter {
                     break;
             }
         holder.textView.setText(m_Data.get(position));
+        return convertView;
+    }
+    */
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        int rowType = getItemViewType(position);
+
+
+        switch(rowType)
+        {
+            case TYPE_ITEM:
+                if(!(convertView instanceof ItemListeExercice))
+                {
+                    convertView= new ItemListeExercice(m_inflater.getContext());
+                }
+                if(position == mfocusPosition)
+                {
+
+                    ((ItemListeExercice) convertView).setUpView(m_Data.get(position),true,false);
+                }
+                else
+                {
+                    ((ItemListeExercice) convertView).setUpView(m_Data.get(position),false,false);
+
+                }
+            break;
+            case TYPE_SEPARATOR:
+                if(!(convertView instanceof ItemListeSequence))
+                {
+                    convertView = new ItemListeSequence(m_inflater.getContext());
+                }
+                ((ItemListeSequence) convertView).setUpView(m_Data.get(position),false);
+                break;
+        }
+
         return convertView;
     }
 

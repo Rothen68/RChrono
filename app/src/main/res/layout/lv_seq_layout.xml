@@ -5,7 +5,7 @@ lv_seq_layout.xml
 Définit le layout d'une séquence dans la listView
 
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,4 +26,4 @@ Définit le layout d'une séquence dans la listView
         android:id="@+id/btnSuppr"
         android:background="@drawable/suppr"
         android:layout_gravity="center" />
-</LinearLayout>
+</merge>
